@@ -11,7 +11,7 @@ using backend.Data;
 namespace backend.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220205212433_M1")]
+    [Migration("20220205232940_M1")]
     partial class M1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,7 +42,8 @@ namespace backend.Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("gid");
+                    b.HasIndex("gid")
+                        .IsUnique();
 
                     b.ToTable("User");
                 });

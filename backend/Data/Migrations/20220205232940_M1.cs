@@ -211,7 +211,8 @@ namespace backend.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_User_gid",
                 table: "User",
-                column: "gid");
+                column: "gid",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

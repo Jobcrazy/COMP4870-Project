@@ -21,7 +21,7 @@ namespace backend.Data
             modelBuilder.Entity<User>().Property(f => f.id)
                 .ValueGeneratedOnAdd();
             modelBuilder.Entity<User>().HasIndex(
-                user => new { user.gid }).IsUnique(false);
+                user => new { user.gid }).IsUnique(true);
         }
     }
 }

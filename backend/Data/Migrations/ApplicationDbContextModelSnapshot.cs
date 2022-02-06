@@ -40,7 +40,8 @@ namespace backend.Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("gid");
+                    b.HasIndex("gid")
+                        .IsUnique();
 
                     b.ToTable("User");
                 });
