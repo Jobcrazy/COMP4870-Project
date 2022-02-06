@@ -1,6 +1,6 @@
 import React from "react";
 import { Route, Redirect, withRouter, Switch } from "react-router-dom";
-import { Layout, Menu } from "antd";
+import { Layout, Menu, Row, Col, Avatar } from "antd";
 import {
   AreaChartOutlined,
   AuditOutlined,
@@ -14,7 +14,7 @@ const Expense = React.lazy(() => import("../expense/List"));
 const UserList = React.lazy(() => import("../user/List"));
 const Summary = React.lazy(() => import("../summary/Summary"));
 
-const { Sider } = Layout;
+const { Header, Footer, Sider, Content } = Layout;
 
 class Main extends React.Component {
   constructor(props) {
@@ -74,7 +74,6 @@ class Main extends React.Component {
   sideBar() {
     return (
       <Sider width={200} className="site-layout-background">
-        <div className="logo">Money Guardian</div>
         <Menu
           mode="inline"
           defaultSelectedKeys={this.state.currentItem}
@@ -100,16 +99,22 @@ class Main extends React.Component {
   render() {
     return (
       <Layout className="container">
+        <Header>
+          <div className="logo">Money Guadian</div>
+          <div className="avarta"><Avatar size={40} src={Utils.getProfile().head} /></div>
+        </Header>
         <Layout>
           <this.sideBar />
-          <Layout style={{ padding: "24px 24px 24px" }}>
-            <Switch>
-              <Redirect from="/main/" to="/main/summary" exact />
-              <Route path="/main/summary" component={Summary} exact />
-              <Route path="/main/expense" component={Expense} exact />
-              <Route path="/main/user" component={UserList} exact />
-            </Switch>
-          </Layout>
+          <Content>
+            <Layout style={{ padding: "24px 24px 24px" }}>
+              <Switch>
+                <Redirect from="/main/" to="/main/summary" exact />
+                <Route path="/main/summary" component={Summary} exact />
+                <Route path="/main/expense" component={Expense} exact />
+                <Route path="/main/user" component={UserList} exact />
+              </Switch>
+            </Layout>
+          </Content>
         </Layout>
       </Layout>
     );

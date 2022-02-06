@@ -170,7 +170,7 @@ class ContractList extends React.Component {
 
     store.dispatch({
       type: "setMenuItem",
-      value: ["/main/timesheet"],
+      value: ["/main/expense"],
     });
   }
 

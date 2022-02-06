@@ -65,19 +65,22 @@ class Login extends React.Component {
   onFinish(profile) {
     this.setLoading(true);
 
+    let data = {
+      gid: profile.getId(),
+      fname: profile.getName(),
+      gname: profile.getGivenName(),
+      xname: profile.getFamilyName(),
+      head: profile.getImageUrl(),
+      email: profile.getEmail(),
+    };
+
+    Utils.setProfile(data);
+
     let self = this;
     axios
-      .post("/api/user/login", {
-        gid: profile.getId(),
-        fname: profile.getName(),
-        gname: profile.getGivenName(),
-        xname: profile.getFamilyName(),
-        head: profile.getImageUrl(),
-        email: profile.getEmail(),
-      })
+      .post("/api/user/login", data)
       .then(function (res) {
         if (0 === res.data.code) {
-          console.log(res.data.data);
           Utils.setToken(res.data.data);
 
           self.props.history.push("/main");
