@@ -11,7 +11,6 @@ import {
 } from "antd";
 import axios from "axios";
 import { PlusSquareOutlined } from "@ant-design/icons";
-import "./List.css";
 import store from "../../store";
 import moment from "moment";
 import Utils from "../../common/Utils";
@@ -23,7 +22,7 @@ class ContractList extends React.Component {
     super(props);
 
     this.onTableTitle = this.onTableTitle.bind(this);
-    this.onDateChange = this.onDateChange.bind(this);
+    //this.onDateChange = this.onDateChange.bind(this);
 
     this.columns = [
       {
@@ -190,19 +189,13 @@ class ContractList extends React.Component {
       <Row>
         <Col span="18">
           <Space>
-            <Popconfirm
-              placement="right"
-              title="Are you sure to create a new cost?"
-              onConfirm={() => this.handleAdd()}
+            <Button
+              type="primary"
+              icon={<PlusSquareOutlined />}
+              //onClick={this.onAddSupplier}
             >
-              <Button
-                type="primary"
-                icon={<PlusSquareOutlined />}
-                //onClick={this.onAddSupplier}
-              >
-                New Cost
-              </Button>
-            </Popconfirm>
+              New Cost
+            </Button>
           </Space>
         </Col>
         <Col span="6" style={{ textAlign: "right" }}>

@@ -3,8 +3,9 @@ import { Route, Redirect, withRouter, Switch } from "react-router-dom";
 import { Layout, Menu, Row, Col, Avatar } from "antd";
 import {
   AreaChartOutlined,
-  AuditOutlined,
+  LogoutOutlined,
   TransactionOutlined,
+  PicRightOutlined,
 } from "@ant-design/icons";
 import store from "../../store";
 import "./Main.css";
@@ -13,6 +14,7 @@ import Utils from "../../common/Utils";
 const Expense = React.lazy(() => import("../expense/List"));
 const UserList = React.lazy(() => import("../user/List"));
 const Summary = React.lazy(() => import("../summary/Summary"));
+const Goal = React.lazy(() => import("../goal/Goal"));
 
 const { Header, Footer, Sider, Content } = Layout;
 
@@ -85,10 +87,13 @@ class Main extends React.Component {
           <Menu.Item key="/main/summary" icon={<AreaChartOutlined />}>
             Summary
           </Menu.Item>
-          <Menu.Item key="/main/expense" icon={<AuditOutlined />}>
+          <Menu.Item key="/main/expense" icon={<TransactionOutlined />}>
             Expense
           </Menu.Item>
-          <Menu.Item key="logout" icon={<TransactionOutlined />}>
+          <Menu.Item key="/main/goal" icon={<PicRightOutlined />}>
+            Goal
+          </Menu.Item>
+          <Menu.Item key="logout" icon={<LogoutOutlined />}>
             Log Out
           </Menu.Item>
         </Menu>
@@ -101,7 +106,9 @@ class Main extends React.Component {
       <Layout className="container">
         <Header>
           <div className="logo">Money Guadian</div>
-          <div className="avarta"><Avatar size={40} src={Utils.getProfile().head} /></div>
+          <div className="avarta">
+            <Avatar size={40} src={Utils.getProfile().head} />
+          </div>
         </Header>
         <Layout>
           <this.sideBar />
@@ -111,6 +118,7 @@ class Main extends React.Component {
                 <Redirect from="/main/" to="/main/summary" exact />
                 <Route path="/main/summary" component={Summary} exact />
                 <Route path="/main/expense" component={Expense} exact />
+                <Route path="/main/goal" component={Goal} exact />
                 <Route path="/main/user" component={UserList} exact />
               </Switch>
             </Layout>

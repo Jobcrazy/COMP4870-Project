@@ -1,12 +1,14 @@
 import React from "react";
-import { Row, Form, Col, Input, Button, message } from "antd";
+import { Row, Col, Button, message, DatePicker } from "antd";
 import axios from "axios";
 import Utils from "../../common/Utils";
 import "../../store";
 import store from "../../store";
 import "./Summary.css";
 import ReactDOM from "react-dom";
-import { DualAxes } from "@ant-design/plots";
+import { DualAxes, Bar } from "@ant-design/plots";
+import Layout from "antd/lib/layout/layout";
+const { RangePicker } = DatePicker;
 
 const CostDualAxes = () => {
   const data = [
@@ -40,6 +42,7 @@ const CostDualAxes = () => {
     data: [data, data],
     xField: "time",
     yField: ["value", "count"],
+    legend: false,
     geometryOptions: [
       {
         geometry: "column",
@@ -52,10 +55,43 @@ const CostDualAxes = () => {
       },
     ],
   };
-  return <DualAxes {...config} />;
+  return <DualAxes {...config} className="barchart" />;
 };
 
-class Password extends React.Component {
+const Category = () => {
+  const data = [
+    {
+      year: "1951 年",
+      value: 38,
+    },
+    {
+      year: "1952 年",
+      value: 52,
+    },
+    {
+      year: "1956 年",
+      value: 61,
+    },
+    {
+      year: "1957 年",
+      value: 145,
+    },
+    {
+      year: "1958 年",
+      value: 48,
+    },
+  ];
+  const config = {
+    data,
+    xField: "value",
+    yField: "year",
+    seriesField: "year",
+    legend: false
+  };
+  return <Bar {...config} className="barchart" />;
+};
+
+class Summary extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -82,10 +118,23 @@ class Password extends React.Component {
   render() {
     return (
       <>
-        <CostDualAxes />
+        <Row>
+          <Col span="18"></Col>
+          <Col span="6" style={{ textAlign: "right" }}>
+            <RangePicker picker="month" />
+          </Col>
+        </Row>
+
+        <Row>
+          <CostDualAxes />
+        </Row>
+
+        <Row>
+          <Category />
+        </Row>
       </>
     );
   }
 }
 
-export default Password;
+export default Summary;
