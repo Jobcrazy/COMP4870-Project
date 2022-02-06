@@ -13,6 +13,8 @@ namespace backend.Data
 
         public DbSet<User>? User { get; set; }
 
+        public DbSet<Goal>? Goal { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -22,6 +24,9 @@ namespace backend.Data
                 .ValueGeneratedOnAdd();
             modelBuilder.Entity<User>().HasIndex(
                 user => new { user.gid }).IsUnique(true);
+
+            modelBuilder.Entity<Goal>().HasIndex(
+                g => new { g.uid, g.date }).IsUnique(true);
         }
     }
 }

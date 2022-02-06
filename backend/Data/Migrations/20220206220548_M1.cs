@@ -171,6 +171,27 @@ namespace backend.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Goal",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    uid = table.Column<int>(type: "INTEGER", nullable: false),
+                    amount = table.Column<double>(type: "REAL", nullable: false),
+                    date = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Goal", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Goal_User_uid",
+                        column: x => x.uid,
+                        principalTable: "User",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
@@ -209,6 +230,12 @@ namespace backend.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Goal_uid_date",
+                table: "Goal",
+                columns: new[] { "uid", "date" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_User_gid",
                 table: "User",
                 column: "gid",
@@ -233,13 +260,16 @@ namespace backend.Data.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "User");
+                name: "Goal");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "User");
         }
     }
 }

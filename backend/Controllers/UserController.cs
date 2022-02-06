@@ -24,7 +24,7 @@ public class UserController : ControllerBase
     {
         var respond = new Response<string>
         {
-            code = 0,
+            code = CODE.ERROR_SUCCESS,
             message = "",
         };
 

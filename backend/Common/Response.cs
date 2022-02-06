@@ -5,9 +5,16 @@ using System.Threading.Tasks;
 
 namespace backend.Common
 {
+    public enum CODE
+    {
+        ERROR_SUCCESS,
+        ERROR_INVALIDE_TOKEN,
+        ERROR_GOAL_EXISTS,
+    }
+
     public class Response<T>
     {
-        public uint code { get; set; }
+        public CODE code { get; set; }
         public string? message { get; set; }
         public T? data { get; set; }
     }

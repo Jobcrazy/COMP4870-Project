@@ -6,9 +6,9 @@ using backend.Data;
 
 namespace backend.Common
 {
-    public class Utils
+    public static class Utils
     {
-        public bool IsTokenValid(ApplicationDbContext _context, string token)
+        public static bool IsTokenValid(ApplicationDbContext _context, string token)
         {
             var existingUser = _context.User!.SingleOrDefault(u => u.gid == token);
 
