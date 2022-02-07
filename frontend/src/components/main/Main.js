@@ -12,7 +12,6 @@ import "./Main.css";
 import Utils from "../../common/Utils";
 
 const Expense = React.lazy(() => import("../expense/List"));
-const UserList = React.lazy(() => import("../user/List"));
 const Summary = React.lazy(() => import("../summary/Summary"));
 const Goal = React.lazy(() => import("../goal/Goal"));
 
@@ -91,7 +90,7 @@ class Main extends React.Component {
             Expense
           </Menu.Item>
           <Menu.Item key="/main/goal" icon={<PicRightOutlined />}>
-            Goal
+            Budget
           </Menu.Item>
           <Menu.Item key="logout" icon={<LogoutOutlined />}>
             Log Out
@@ -119,7 +118,6 @@ class Main extends React.Component {
                 <Route path="/main/summary" component={Summary} exact />
                 <Route path="/main/expense" component={Expense} exact />
                 <Route path="/main/goal" component={Goal} exact />
-                <Route path="/main/user" component={UserList} exact />
               </Switch>
             </Layout>
           </Content>

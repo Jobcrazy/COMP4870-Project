@@ -20,7 +20,7 @@ public class GoalController : ControllerBase
 
     [HttpPost]
     [Route("all")]
-    public Response<IEnumerable<Goal>> GetAll(string token)
+    public Response<IEnumerable<Goal>> All(String token)
     {
         Response<IEnumerable<Goal>> response = new Response<IEnumerable<Goal>>
         {
@@ -28,7 +28,7 @@ public class GoalController : ControllerBase
             message = "",
         };
 
-        if (Utils.IsTokenValid(_context, token))
+        if (!Utils.IsTokenValid(_context, token))
         {
             response.code = CODE.ERROR_INVALIDE_TOKEN;
             response.message = "Invalide Token";
@@ -46,7 +46,7 @@ public class GoalController : ControllerBase
 
     [HttpPost]
     [Route("add")]
-    public Response<IEnumerable<Goal>> AddGoal(string token, Goal goal)
+    public Response<IEnumerable<Goal>> AddGoal([FromQuery] string token, [FromBody] Goal goal)
     {
         Response<IEnumerable<Goal>> response = new Response<IEnumerable<Goal>>
         {
@@ -54,7 +54,7 @@ public class GoalController : ControllerBase
             message = "",
         };
 
-        if (Utils.IsTokenValid(_context, token))
+        if (!Utils.IsTokenValid(_context, token))
         {
             response.code = CODE.ERROR_INVALIDE_TOKEN;
             response.message = "Invalide Token";
@@ -72,7 +72,7 @@ public class GoalController : ControllerBase
         if (null != preGoal)
         {
             response.code = CODE.ERROR_GOAL_EXISTS;
-            response.message = "Duplicated Goal";
+            response.message = "The budget has already existed.";
             return response;
         }
 
@@ -81,6 +81,40 @@ public class GoalController : ControllerBase
 
         // Save to database
         _context.Goal!.Add(goal);
+        _context.SaveChanges();
+
+        return response;
+    }
+
+    [HttpPost]
+    [Route("del")]
+    public Response<IEnumerable<Goal>> DelGoal([FromQuery] string token, [FromQuery] int id)
+    {
+        Response<IEnumerable<Goal>> response = new Response<IEnumerable<Goal>>
+        {
+            code = CODE.ERROR_SUCCESS,
+            message = "",
+        };
+
+        if (!Utils.IsTokenValid(_context, token))
+        {
+            response.code = CODE.ERROR_INVALIDE_TOKEN;
+            response.message = "Invalide Token";
+            return response;
+        }
+
+        // Check if the goal already exists
+        var goal = _context.Goal!.SingleOrDefault(
+            g => g.id == id);
+
+        // If not exists
+        if (null == goal)
+        {
+            return response;
+        }
+
+        // Save to database
+        _context.Goal!.Remove(goal);
         _context.SaveChanges();
 
         return response;

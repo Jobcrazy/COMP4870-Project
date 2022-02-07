@@ -16,6 +16,9 @@ let Utils = {
   rmToken: function () {
     cookie.remove("token", { path: "/" });
   },
+  cSharpDateToJsData(csDate) {
+    return new Date(Date.parse(csDate));
+  },
   //创建时间格式化显示
   dateFtt: function (fmt, date) {
     //author: meizz
