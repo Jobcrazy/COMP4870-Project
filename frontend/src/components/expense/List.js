@@ -8,6 +8,9 @@ import {
   Space,
   DatePicker,
   Popconfirm,
+  InputNumber,
+  Form,
+  Modal,
 } from "antd";
 import axios from "axios";
 import { PlusSquareOutlined } from "@ant-design/icons";
@@ -21,9 +24,6 @@ class ContractList extends React.Component {
   constructor(props) {
     super(props);
 
-    this.onTableTitle = this.onTableTitle.bind(this);
-    //this.onDateChange = this.onDateChange.bind(this);
-
     this.columns = [
       {
         title: "Date",
@@ -32,8 +32,8 @@ class ContractList extends React.Component {
       },
       {
         title: "Cost",
-        dataIndex: "cost",
-        key: "cost",
+        dataIndex: "amount",
+        key: "amount",
       },
       {
         title: "Category",
@@ -70,7 +70,18 @@ class ContractList extends React.Component {
     this.state = {
       dataSource: [],
       date: new Date(),
+      isModalVisible: false,
     };
+
+    this.onTableTitle = this.onTableTitle.bind(this);
+    this.onAddExpense = this.onAddExpense.bind(this);
+    this.handleCancelAdd = this.handleCancelAdd.bind(this);
+  }
+
+  onAddExpense() {
+    this.setState({
+      isModalVisible: true,
+    });
   }
 
   handleDelete = (id) => {
@@ -184,6 +195,12 @@ class ContractList extends React.Component {
     this.loadData(date);
   }
 
+  handleCancelAdd() {
+    this.setState({
+      isModalVisible: false,
+    });
+  }
+
   onTableTitle() {
     return (
       <Row>
@@ -192,7 +209,7 @@ class ContractList extends React.Component {
             <Button
               type="primary"
               icon={<PlusSquareOutlined />}
-              //onClick={this.onAddSupplier}
+              onClick={this.onAddExpense}
             >
               New Cost
             </Button>
@@ -201,6 +218,61 @@ class ContractList extends React.Component {
         <Col span="6" style={{ textAlign: "right" }}>
           <RangePicker />
         </Col>
+
+        <Modal
+          title="Add Budget"
+          visible={this.state.isModalVisible}
+          onOk={this.handleAdd}
+          onCancel={this.handleCancelAdd}
+          destroyOnClose={true}
+        >
+          <Form
+            name="control-ref"
+            initialValues={{
+              //remember: true,
+              amount: this.state.amount,
+              date: moment(this.state.date, "YYYY-MM"),
+            }}
+            //onFinish={this.onFinish}
+            ref={this.formRef}
+            preserve={false}
+          >
+            <Form.Item
+              colon={false}
+              label="Budget"
+              name="amount"
+              rules={[
+                {
+                  required: true,
+                  message: "Please Input Your Budget",
+                },
+              ]}
+            >
+              <InputNumber
+                prefix="$"
+                style={{ width: "100%" }}
+                placeholder="Please Input Your Budget"
+              />
+            </Form.Item>
+            <Form.Item
+              colon={false}
+              label="Month"
+              name="date"
+              rules={[
+                {
+                  required: true,
+                  message: "Please Slect a Month",
+                },
+              ]}
+            >
+              <DatePicker
+                style={{ width: "100%" }}
+                picker="month"
+                format={"YYYY-MM"}
+              />
+            </Form.Item>
+          </Form>
+        </Modal>
       </Row>
     );
   }

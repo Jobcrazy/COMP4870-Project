@@ -172,6 +172,28 @@ namespace backend.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Expense",
+                columns: table => new
+                {
+                    id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    uid = table.Column<int>(type: "INTEGER", nullable: false),
+                    category = table.Column<int>(type: "INTEGER", nullable: false),
+                    amount = table.Column<double>(type: "REAL", nullable: false),
+                    date = table.Column<DateTime>(type: "TEXT", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Expense", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_Expense_User_uid",
+                        column: x => x.uid,
+                        principalTable: "User",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Goal",
                 columns: table => new
                 {
@@ -230,6 +252,11 @@ namespace backend.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Expense_uid_date",
+                table: "Expense",
+                columns: new[] { "uid", "date" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Goal_uid_date",
                 table: "Goal",
                 columns: new[] { "uid", "date" },
@@ -258,6 +285,9 @@ namespace backend.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Expense");
 
             migrationBuilder.DropTable(
                 name: "Goal");

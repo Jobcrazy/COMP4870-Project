@@ -11,13 +11,38 @@ using backend.Data;
 namespace backend.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220206235221_M1")]
+    [Migration("20220207070205_M1")]
     partial class M1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.1");
+
+            modelBuilder.Entity("backend.Models.Expense", b =>
+                {
+                    b.Property<int>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<double>("amount")
+                        .HasColumnType("REAL");
+
+                    b.Property<int>("category")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<int>("uid")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("uid", "date");
+
+                    b.ToTable("Expense");
+                });
 
             modelBuilder.Entity("backend.Models.Goal", b =>
                 {
@@ -261,6 +286,17 @@ namespace backend.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("backend.Models.Expense", b =>
+                {
+                    b.HasOne("backend.Models.User", "user")
+                        .WithMany()
+                        .HasForeignKey("uid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("user");
                 });
 
             modelBuilder.Entity("backend.Models.Goal", b =>
