@@ -12,7 +12,11 @@ import {
   Modal,
   Popconfirm,
 } from "antd";
-import { PlusSquareOutlined } from "@ant-design/icons";
+import {
+  PlusSquareOutlined,
+  EditOutlined,
+  DeleteOutlined,
+} from "@ant-design/icons";
 import axios from "axios";
 import Utils from "../../common/Utils";
 import "../../store";
@@ -23,9 +27,10 @@ class Goal extends React.Component {
   constructor(props) {
     super(props);
 
+    this.bAdd = false;
+
     this.state = {
       dataSource: [],
-      date: new Date(),
       isModalVisible: false,
       amount: 0,
       date: new Date(),
@@ -52,14 +57,25 @@ class Goal extends React.Component {
         width: "150px",
         render: (text, record) => (
           <Space>
+            <Button
+              type="primary"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => {
+                this.bAdd = false;
+                this.onAddGoal();
+                this.setState({
+                  amount: record.amount,
+                  date: new Date(record.date),
+                });
+              }}
+            />
             <Popconfirm
               placement="left"
               title="Are you sure to delete this budget?"
               onConfirm={() => this.handleDelete(record.id)}
             >
-              <Button danger size="small">
-                Delete
-              </Button>
+              <Button danger size="small" icon={<DeleteOutlined />} />
             </Popconfirm>
           </Space>
         ),
@@ -67,7 +83,6 @@ class Goal extends React.Component {
     ];
 
     this.formRef = React.createRef();
-
     this.onTableTitle = this.onTableTitle.bind(this);
     this.loadData = this.loadData.bind(this);
     this.handleCancelAdd = this.handleCancelAdd.bind(this);
@@ -101,7 +116,7 @@ class Goal extends React.Component {
     } catch (err) {
       this.setLoading(false);
       console.log(err);
-      message.error("发生错误");
+      message.error("Something went error.");
     }
   }
 
@@ -152,7 +167,7 @@ class Goal extends React.Component {
     } catch (err) {
       this.setLoading(false);
       console.log(err);
-      message.error("发生错误");
+      message.error("Something went error.");
     }
   }
 
@@ -168,17 +183,18 @@ class Goal extends React.Component {
     });
   }
 
-  async handleAdd() {
-    let values = this.formRef.current.getFieldsValue(["amount", "date"]);
+  async handleAdd(values) {
     values.date = values.date.format("YYYY-MM");
 
     this.setLoading(true);
     this.handleCancelAdd();
 
+    let url = this.bAdd ? "api/Goal/add" : "api/Goal/update";
+
     try {
       let result = await axios({
         method: "POST",
-        url: "api/Goal/add",
+        url,
         params: {
           token: Utils.getToken(),
         },
@@ -196,7 +212,7 @@ class Goal extends React.Component {
     } catch (err) {
       this.setLoading(false);
       console.log(err);
-      message.error("发生错误");
+      message.error("Something went error.");
     }
   }
 
@@ -208,7 +224,10 @@ class Goal extends React.Component {
             <Button
               type="primary"
               icon={<PlusSquareOutlined />}
-              onClick={this.onAddGoal}
+              onClick={() => {
+                this.bAdd = true;
+                this.onAddGoal();
+              }}
             >
               New Budget
             </Button>
@@ -217,18 +236,17 @@ class Goal extends React.Component {
         <Modal
           title="Add Budget"
           visible={this.state.isModalVisible}
-          onOk={this.handleAdd}
+          onOk={() => this.formRef.current.submit()}
           onCancel={this.handleCancelAdd}
           destroyOnClose={true}
         >
           <Form
             name="control-ref"
             initialValues={{
-              //remember: true,
               amount: this.state.amount,
               date: moment(this.state.date, "YYYY-MM"),
             }}
-            //onFinish={this.onFinish}
+            onFinish={this.handleAdd}
             ref={this.formRef}
             preserve={false}
           >
