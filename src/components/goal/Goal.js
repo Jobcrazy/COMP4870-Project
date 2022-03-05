@@ -226,6 +226,10 @@ class Goal extends React.Component {
               icon={<PlusSquareOutlined />}
               onClick={() => {
                 this.bAdd = true;
+                this.setState({
+                  amount: 0,
+                  date: new Date(),
+                });
                 this.onAddGoal();
               }}
             >
