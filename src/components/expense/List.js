@@ -89,7 +89,7 @@ class ContractList extends React.Component {
 
     let self = this;
     axios
-      .delete("/api/timesheet/token/" + Utils.getToken() + "/id/" + id)
+      .delete(Utils.getDomain() + "/api/timesheet/token/" + Utils.getToken() + "/id/" + id)
       .then(function (res) {
         self.setLoading(false);
         if (1 === res.data.code) {
@@ -149,7 +149,7 @@ class ContractList extends React.Component {
     let self = this;
     axios
       .get(
-        "/api/timesheet/token/" +
+        Utils.getDomain() + "/api/timesheet/token/" +
           Utils.getToken() +
           "/date/" +
           Utils.dateFtt("yyyy-MM-dd", this.state.date)
