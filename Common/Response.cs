@@ -10,6 +10,8 @@ namespace backend.Common
         ERROR_SUCCESS,
         ERROR_INVALIDE_TOKEN,
         ERROR_GOAL_EXISTS,
+        ERROR_CATEGORY_EXISTS,
+        ERROR_INVALID_ID,
     }
 
     public class Response<T>

@@ -17,6 +17,8 @@ namespace backend.Data
 
         public DbSet<Expense>? Expense { get; set; }
 
+        public DbSet<Category>? Category { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -36,6 +38,11 @@ namespace backend.Data
             .ValueGeneratedOnAdd();
             modelBuilder.Entity<Expense>().HasIndex(
                 e => new { e.uid, e.date }).IsUnique(false);
+
+            modelBuilder.Entity<Category>().Property(c => c.id)
+            .ValueGeneratedOnAdd();
+            modelBuilder.Entity<Category>().HasIndex(
+                c => new { c.uid }).IsUnique(true);
         }
     }
 }
