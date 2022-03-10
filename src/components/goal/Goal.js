@@ -189,7 +189,8 @@ class Goal extends React.Component {
     this.setLoading(true);
     this.handleCancelAdd();
 
-    let url = this.bAdd ? "api/Goal/add" : "api/Goal/update";
+    let url =
+      Utils.getDomain() + (this.bAdd ? "api/Goal/add" : "api/Goal/update");
 
     try {
       let result = await axios({

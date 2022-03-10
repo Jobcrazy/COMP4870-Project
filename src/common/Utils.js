@@ -59,6 +59,7 @@ let Utils = {
     return this.dateFtt("yyyy-MM-dd", crtTime);
   },
   getDomain: function () {
+    return "https://msapi.azurewebsites.net/";
     if (process.env.NODE_ENV === "development") {
       return "";
     } else {

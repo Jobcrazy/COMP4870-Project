@@ -194,9 +194,11 @@ class Category extends React.Component {
   async handleAdd(values) {
     this.setLoading(true);
 
-    let url = this.bAdd
-      ? "api/Category"
-      : "api/Category/" + this.state.currentCategory.id;
+    let url =
+      Utils.getDomain() +
+      (this.bAdd
+        ? "api/Category"
+        : "api/Category/" + this.state.currentCategory.id);
     let method = this.bAdd ? "POST" : "PUT";
 
     try {
@@ -208,7 +210,7 @@ class Category extends React.Component {
         },
         data: {
           id: this.state.currentCategory.id,
-          categoryName: values.categoryName
+          categoryName: values.categoryName,
         },
       });
 
