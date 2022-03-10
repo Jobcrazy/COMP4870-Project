@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Row,
   Col,
@@ -20,35 +20,78 @@ import axios from "axios";
 import Utils from "../../common/Utils";
 import "../../store";
 import store from "../../store";
+import moment from "moment";
 
-const CategoryList = props => {
-  const [dataSource, setDataSource] = useState();
-  const [isCreateForm, setIsCreateForm] = useState(false);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [currentCategory, setCurrentCategory] = useState(null);
-  const [form] = Form.useForm();
+class Goal extends React.Component {
+  constructor(props) {
+    super(props);
 
-  useEffect(() => {
-    window.document.title = "Category - Money Guardian";
-    let action = {
-      type: "setMenuItem",
-      value: ["/main/category"],
-    };
-    store.dispatch(action);
-    loadData();
-  }, []);
+    this.bAdd = false;
 
-  const setLoading = (bLoading) => {
-    let action = {
-      type: "setLoading",
-      value: bLoading,
+    this.state = {
+      dataSource: [],
+      isModalVisible: false,
+      amount: 0,
+      date: new Date(),
+      currentCategory: {
+        id: 0,
+        categoryName: "",
+      },
     };
 
-    store.dispatch(action);
+    this.columns = [
+      {
+        title: "Category",
+        dataIndex: "categoryName",
+        key: "categoryName",
+      },
+      {
+        title: "Action",
+        key: "operation",
+        fixed: "right",
+        width: "150px",
+        render: (text, record) => (
+          <Space>
+            <Button
+              type="primary"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => {
+                this.bAdd = false;
+                this.onAddGoal();
+                this.setState({
+                  currentCategory: {
+                    id: record.id,
+                    categoryName: record.categoryName,
+                  },
+                });
+              }}
+            />
+            <Popconfirm
+              placement="left"
+              title="Are you sure to delete this category?"
+              onConfirm={() => this.handleDelete(record.id)}
+            >
+              <Button danger size="small" icon={<DeleteOutlined />} />
+            </Popconfirm>
+          </Space>
+        ),
+      },
+    ];
+
+    this.formRef = React.createRef();
+    this.onTableTitle = this.onTableTitle.bind(this);
+    this.loadData = this.loadData.bind(this);
+    this.handleCancelAdd = this.handleCancelAdd.bind(this);
+    this.onAddGoal = this.onAddGoal.bind(this);
+    this.handleAdd = this.handleAdd.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+    this.resetForm = this.resetForm.bind(this);
   }
 
-  const loadData = async () => {
-    setLoading(true);
+  async loadData() {
+    this.setLoading(true);
+
     try {
       let result = await axios({
         method: "GET",
@@ -58,70 +101,45 @@ const CategoryList = props => {
         },
       });
 
-      setLoading(false);
-
+      this.setLoading(false);
       if (result.data.code != 0) {
         message.error(result.data.message);
         return;
       }
 
-      setDataSource(result.data.data);
-    } catch (err) {
-      setLoading(false);
-      console.log(err);
-      message.error("Something went error.");
-    }
-  }
-
-  const onAddCategory = () => {
-    setIsModalVisible(true);
-  };
-
-  const closeModal = () => {
-    setIsModalVisible(false);
-    setCurrentCategory(null);
-  }
-
-  const handleAddCategory = async (values) => {
-    setLoading(true);
-    closeModal();
-
-    let url = isCreateForm ? "api/Category" : "api/Category/" + currentCategory.id;
-    let method = isCreateForm ? "POST" : "PUT"
-    if (!isCreateForm) {
-      values = {
-        categoryName: values.categoryName,
-        id: currentCategory.id
-      };
-    }
-
-    try {
-      let result = await axios({
-        method: method,
-        url: Utils.getDomain() + url,
-        params: {
-          token: Utils.getToken(),
-        },
-        data: values,
+      this.setState({
+        dataSource: result.data.data,
       });
-
-      setLoading(false);
-
-      if (result.data.code != 0) {
-        message.error(result.data.message);
-        return;
-      }
-      setCurrentCategory(null);
-      loadData();
     } catch (err) {
-      setLoading(false);
+      this.setLoading(false);
       console.log(err);
       message.error("Something went error.");
     }
   }
 
-  const handleDelete = async (id) => {
-    setLoading(true);
+  componentDidMount() {
+    window.document.title = "Budget - Money Guardian";
+
+    let action = {
+      type: "setMenuItem",
+      value: ["/main/goal"],
+    };
+    store.dispatch(action);
+
+    this.loadData();
+  }
+
+  setLoading(bLoading) {
+    let action = {
+      type: "setLoading",
+      value: bLoading,
+    };
+
+    store.dispatch(action);
+  }
+
+  async handleDelete(id) {
+    this.setLoading(true);
 
     try {
       let result = await axios({
@@ -129,67 +147,96 @@ const CategoryList = props => {
         url: Utils.getDomain() + "api/Category/" + id,
         params: {
           token: Utils.getToken(),
+          id,
         },
         data: {},
       });
 
-      setLoading(false);
+      this.handleCancelAdd();
+      this.setLoading(false);
 
-      if (result.data.code !== 0) {
+      if (result.data.code != 0) {
         message.error(result.data.message);
         return;
       }
 
-      loadData();
+      this.loadData();
     } catch (err) {
-      setLoading(false);
+      this.handleCancelAdd();
+      this.setLoading(false);
       console.log(err);
       message.error("Something went error.");
     }
   }
 
-  const columns = [
-    {
-      title: "ID",
-      dataIndex: "id",
-      key: "id",
-    },
-    {
-      title: "Category",
-      dataIndex: "categoryName",
-      key: "categoryName",
-    },
-    {
-      title: "Action",
-      key: "operation",
-      fixed: "right",
-      width: "150px",
-      render: (text, record) => (
-        <Space>
-          <Button
-            type="primary"
-            size="small"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setCurrentCategory(record);
-              setIsCreateForm(false);
-              onAddCategory();
-            }}
-          />
-          <Popconfirm
-            placement="left"
-            title="Are you sure to delete this category?"
-            onConfirm={() => handleDelete(record.id)}
-          >
-            <Button danger size="small" icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+  handleCancelAdd() {
+    this.resetForm();
+    this.setState({
+      isModalVisible: false,
+    });
+  }
 
-  const onTableTitle = () => {
-    return(
+  onAddGoal() {
+    this.setState({
+      isModalVisible: true,
+    });
+  }
+
+  resetForm() {
+    this.setState({
+      currentCategory: {
+        id: 0,
+        categoryName: "",
+      },
+    });
+  }
+
+  async handleAdd(values) {
+    this.setLoading(true);
+
+    let url = this.bAdd
+      ? "api/Category"
+      : "api/Category/" + this.state.currentCategory.id;
+    let method = this.bAdd ? "POST" : "PUT";
+
+    try {
+      let result = await axios({
+        method,
+        url,
+        params: {
+          token: Utils.getToken(),
+        },
+        data: {
+          id: this.state.currentCategory.id,
+          categoryName: values.categoryName
+        },
+      });
+
+      this.handleCancelAdd();
+      this.setLoading(false);
+
+      if (result.data.code != 0) {
+        message.error(result.data.message);
+        return;
+      }
+
+      this.loadData();
+      this.setState({
+        currentCategory: {
+          id: 0,
+          categoryName: "",
+        },
+      });
+    } catch (err) {
+      this.handleCancelAdd();
+      this.setLoading(false);
+      console.log(err);
+      message.error("Something went error.");
+    }
+  }
+
+  onTableTitle() {
+    return (
       <Row>
         <Col span="18">
           <Space>
@@ -197,9 +244,12 @@ const CategoryList = props => {
               type="primary"
               icon={<PlusSquareOutlined />}
               onClick={() => {
-                setCurrentCategory(null);
-                setIsCreateForm(true);
-                onAddCategory();
+                this.bAdd = true;
+                this.setState({
+                  amount: 0,
+                  date: new Date(),
+                });
+                this.onAddGoal();
               }}
             >
               New Category
@@ -208,61 +258,57 @@ const CategoryList = props => {
         </Col>
         <Modal
           title="Add Category"
-          visible={isModalVisible}
-          onOk={() => {form.validateFields().then((values) => {
-            form.resetFields();
-            handleAddCategory(values);
-          })}}
-          onCancel={closeModal}
+          visible={this.state.isModalVisible}
+          onOk={() => this.formRef.current.submit()}
+          onCancel={this.handleCancelAdd}
           destroyOnClose={true}
         >
           <Form
             name="control-ref"
-            onFinish={handleAddCategory}
-            form={form}
-            preserve={false}
             initialValues={{
-              categoryName: currentCategory?.categoryName,
+              categoryName: this.state.currentCategory.categoryName,
             }}
+            onFinish={this.handleAdd}
+            ref={this.formRef}
+            preserve={false}
           >
             <Form.Item
               colon={false}
-              label="Category Name"
+              label="Name"
               name="categoryName"
               rules={[
                 {
                   required: true,
-                  message: "Please Input Your Category",
+                  message: "Please Input the Category Name",
                 },
               ]}
             >
               <Input
                 style={{ width: "100%" }}
-                placeholder="Please Input Your Category"
+                placeholder="Please Input the Category Name"
               />
             </Form.Item>
           </Form>
         </Modal>
       </Row>
     );
-  };
+  }
 
-
-  return(
-    <>
+  render() {
+    return (
       <Table
-        dataSource={dataSource}
+        dataSource={this.state.dataSource}
         bordered
-        columns={columns}
+        columns={this.columns}
         pagination={{
           position: ["none"],
           pageSize: 10000,
         }}
-        title={onTableTitle}
+        title={this.onTableTitle}
         rowKey={(record) => record.id}
       />
-    </>
-  );
+    );
+  }
 }
 
-export default CategoryList;
+export default Goal;
