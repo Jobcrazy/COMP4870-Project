@@ -43,7 +43,7 @@ class App extends React.Component {
                     <Spin
                         size="large"
                         spinning={this.state.bLoading}
-                        tip="正在加载..."
+                        tip="Loading..."
                         indicator={
                             <LoadingOutlined style={{ fontSize: 24 }} spin />
                         }
@@ -54,7 +54,7 @@ class App extends React.Component {
                     <Spin
                         size="large"
                         spinning={this.state.bLoading}
-                        tip="正在加载..."
+                        tip="Loading..."
                         indicator={
                             <LoadingOutlined style={{ fontSize: 24 }} spin />
                         }

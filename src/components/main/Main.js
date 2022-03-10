@@ -6,10 +6,12 @@ import {
   LogoutOutlined,
   TransactionOutlined,
   PicRightOutlined,
+  UnorderedListOutlined
 } from "@ant-design/icons";
 import store from "../../store";
 import "./Main.css";
 import Utils from "../../common/Utils";
+import CategoryList from "../category/CategoryList";
 
 const Expense = React.lazy(() => import("../expense/List"));
 const Summary = React.lazy(() => import("../summary/Summary"));
@@ -92,6 +94,9 @@ class Main extends React.Component {
           <Menu.Item key="/main/goal" icon={<PicRightOutlined />}>
             Budget
           </Menu.Item>
+          <Menu.Item key="/main/category" icon={<UnorderedListOutlined />}>
+            Category
+          </Menu.Item>
           <Menu.Item key="logout" icon={<LogoutOutlined />}>
             Log Out
           </Menu.Item>
@@ -104,7 +109,7 @@ class Main extends React.Component {
     return (
       <Layout className="container">
         <Header>
-          <div className="logo">Money Guadian</div>
+          <div className="logo">Money Guardian</div>
           <div className="avarta">
             <Avatar size={40} src={Utils.getProfile().head} />
           </div>
@@ -118,6 +123,7 @@ class Main extends React.Component {
                 <Route path="/main/summary" component={Summary} exact />
                 <Route path="/main/expense" component={Expense} exact />
                 <Route path="/main/goal" component={Goal} exact />
+                <Route path="/main/category" component={CategoryList} exact />
               </Switch>
             </Layout>
           </Content>

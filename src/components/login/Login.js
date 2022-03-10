@@ -19,7 +19,7 @@ class Login extends React.Component {
   }
 
   componentDidMount() {
-    window.document.title = "Money Gardian";
+    window.document.title = "Money Guardian";
 
     //this.checkLogin();
 
