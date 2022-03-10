@@ -22,7 +22,7 @@ import "../../store";
 import store from "../../store";
 import moment from "moment";
 
-class Goal extends React.Component {
+class Category extends React.Component {
   constructor(props) {
     super(props);
 
@@ -118,11 +118,11 @@ class Goal extends React.Component {
   }
 
   componentDidMount() {
-    window.document.title = "Budget - Money Guardian";
+    window.document.title = "Categpry - Money Guardian";
 
     let action = {
       type: "setMenuItem",
-      value: ["/main/goal"],
+      value: ["/main/category"],
     };
     store.dispatch(action);
 
@@ -311,4 +311,4 @@ class Goal extends React.Component {
   }
 }
 
-export default Goal;
+export default Category;
