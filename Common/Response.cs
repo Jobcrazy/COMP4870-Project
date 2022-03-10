@@ -12,6 +12,7 @@ namespace backend.Common
         ERROR_GOAL_EXISTS,
         ERROR_CATEGORY_EXISTS,
         ERROR_INVALID_ID,
+        ERROR_CATEGORY_IN_USED,
     }
 
     public class Response<T>

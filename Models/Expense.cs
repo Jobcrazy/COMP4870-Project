@@ -10,7 +10,7 @@ namespace backend.Models
 
         public int uid { get; set; }
 
-        public int category { get; set; }
+        public int categoryId { get; set; }
 
         public double amount { get; set; }
 
@@ -20,5 +20,8 @@ namespace backend.Models
 
         [ForeignKey("uid")]
         public User? user { get; set; }
+
+        [ForeignKey("categoryId")]
+        public Category? category { get; set; }
     }
 }

@@ -38,9 +38,35 @@ public class CategoryController : ControllerBase
         // Get a user
         var user = _context.User!.SingleOrDefault(u => u.gid == token);
 
-        // Get goals
+        // Get categories
         response.data = _context.Category!.Where(
-            c => c.uid == user!.id).ToList();
+            c => c.uid == user!.id).OrderBy(c => c.id);
+        return response;
+    }
+
+    [HttpGet]
+    [Route("{id}")]
+    public Response<Category> getCategoryById(String token, int id)
+    {
+        Response<Category> response = new Response<Category>
+        {
+            code = CODE.ERROR_SUCCESS,
+            message = "",
+        };
+
+        if (!Utils.IsTokenValid(_context, token))
+        {
+            response.code = CODE.ERROR_INVALIDE_TOKEN;
+            response.message = "Invalid Token";
+            return response;
+        }
+
+        // Get a user
+        var user = _context.User!.SingleOrDefault(u => u.gid == token);
+
+        // Get category
+        response.data = _context.Category!.Where(
+            c => c.uid == user!.id && c.id == id).FirstOrDefault();
         return response;
     }
 
@@ -66,7 +92,7 @@ public class CategoryController : ControllerBase
 
         // Check if the category already exists
         var preCategory = _context.Category!.SingleOrDefault(
-            c => c.uid == user!.id && c.CategoryName == category.CategoryName);
+            c => c.uid == user!.id && c.categoryName == category.categoryName);
 
         // If exists
         if (null != preCategory)
@@ -112,7 +138,7 @@ public class CategoryController : ControllerBase
         // Get a user
         var user = _context.User!.SingleOrDefault(u => u.gid == token);
 
-        // Check if the goal already exists
+        // Check if the category already exists
         var preCategory = _context.Category!.SingleOrDefault(
             c => c.uid == user!.id && c.id == id);
 
@@ -124,8 +150,8 @@ public class CategoryController : ControllerBase
             return response;
         }
 
-        // Update a goal
-        preCategory!.CategoryName = category!.CategoryName;
+        // Update a category
+        preCategory!.categoryName = category!.categoryName;
 
         // Save to database
         _context.Category!.Update(preCategory);
@@ -148,6 +174,17 @@ public class CategoryController : ControllerBase
         {
             response.code = CODE.ERROR_INVALIDE_TOKEN;
             response.message = "Invalid Token";
+            return response;
+        }
+
+         // Get a user
+        var user = _context.User!.SingleOrDefault(u => u.gid == token);
+
+        // Check if category is in used
+        var expenseRecord = _context.Expense!.Where(e => e.uid == user!.id && e.categoryId == id).FirstOrDefault();
+        if (expenseRecord != null) {
+            response.code = CODE.ERROR_CATEGORY_IN_USED;
+            response.message = "Category is using, so this are not allowed to be deleted";
             return response;
         }
 

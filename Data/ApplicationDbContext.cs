@@ -42,7 +42,7 @@ namespace backend.Data
             modelBuilder.Entity<Category>().Property(c => c.id)
             .ValueGeneratedOnAdd();
             modelBuilder.Entity<Category>().HasIndex(
-                c => new { c.uid }).IsUnique(true);
+                c => new { c.uid, c.categoryName }).IsUnique(true);
         }
     }
 }

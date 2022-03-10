@@ -10,7 +10,7 @@ namespace backend.Models
         public int uid { get; set; }
 
         [Required]
-        public string?  CategoryName { get; set; }
+        public string? categoryName { get; set; }
 
         [ForeignKey("uid")]
         public User? user { get; set; }
