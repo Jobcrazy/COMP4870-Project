@@ -197,7 +197,7 @@ class Goal extends React.Component {
         method: "POST",
         url,
         params: {
-          token: Utils.getDomain() + Utils.getToken(),
+          token: Utils.getToken(),
         },
         data: values,
       });
