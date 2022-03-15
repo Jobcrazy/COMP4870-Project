@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Cors;
 using backend.Models;
 using backend.Data;
 using backend.Common;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers;
 
@@ -18,7 +19,7 @@ public class ExpenseController
         _context = context;
     }
 
-    [HttpPost]
+    [HttpGet]
     [Route("list")]
     public Response<IEnumerable<Expense>> getList(
         [FromQuery] String token,
@@ -43,7 +44,8 @@ public class ExpenseController
 
         // Get expenses
         response.data = _context.Expense!
-            .Where(e => e.uid == user!.id && e.date >= startDate && e.date <= endDate)
+            .Include(e => e.category)
+            .Where(e => e.uid == user!.id /*&& e.date >= startDate && e.date <= endDate*/)
             .OrderByDescending(e => e.id);
 
         return response;
@@ -81,7 +83,7 @@ public class ExpenseController
         return response;
     }
 
-    [HttpPost]
+    [HttpDelete]
     [Route("del")]
     public Response<IEnumerable<Expense>> DelGoal([FromQuery] string token, [FromQuery] int id)
     {
@@ -110,6 +112,54 @@ public class ExpenseController
 
         // Save to database
         _context.Expense!.Remove(expense);
+        _context.SaveChanges();
+
+        return response;
+    }
+
+    [HttpPut]
+    [Route("{id}")]
+    public Response<IEnumerable<Expense>> UpdateExpensey(
+        [FromQuery] string token,
+        [FromQuery] int id,
+        [FromBody] Expense expense)
+    {
+        Response<IEnumerable<Expense>> response = new Response<IEnumerable<Expense>>
+        {
+            code = CODE.ERROR_SUCCESS,
+            message = "",
+        };
+
+        if (!Utils.IsTokenValid(_context, token))
+        {
+            response.code = CODE.ERROR_INVALIDE_TOKEN;
+            response.message = "Invalid Token";
+            return response;
+        }
+
+        // Get a user
+        var user = _context.User!.SingleOrDefault(u => u.gid == token);
+
+        // Check if the category already exists
+        var preExpense = _context.Expense!.SingleOrDefault(
+            c => c.uid == user!.id && c.id == id);
+
+        // If doesn't exists
+        if (null == preExpense)
+        {
+            response.code = CODE.ERROR_CATEGORY_EXISTS;
+            response.message = "The expense doesn't exist.";
+            return response;
+        }
+
+        // Update an expense
+        preExpense.amount = expense.amount;
+        preExpense.cid = expense.cid;
+        preExpense.note = expense.note;
+        preExpense.date = expense.date;
+
+        // Save to database
+        _context.Expense!.Update(preExpense);
         _context.SaveChanges();
 
         return response;

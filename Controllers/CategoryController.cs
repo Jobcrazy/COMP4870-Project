@@ -181,7 +181,7 @@ public class CategoryController : ControllerBase
         var user = _context.User!.SingleOrDefault(u => u.gid == token);
 
         // Check if category is in used
-        var expenseRecord = _context.Expense!.Where(e => e.uid == user!.id && e.categoryId == id).FirstOrDefault();
+        var expenseRecord = _context.Expense!.Where(e => e.uid == user!.id && e.cid == id).FirstOrDefault();
         if (expenseRecord != null) {
             response.code = CODE.ERROR_CATEGORY_IN_USED;
             response.message = "Category is using, so this are not allowed to be deleted";

@@ -18,7 +18,7 @@ public class GoalController : ControllerBase
         _context = context;
     }
 
-    [HttpPost]
+    [HttpGet]
     [Route("all")]
     public Response<IEnumerable<Goal>> All(String token)
     {
@@ -86,7 +86,7 @@ public class GoalController : ControllerBase
         return response;
     }
 
-    [HttpPost]
+    [HttpPut]
     [Route("update")]
     public Response<IEnumerable<Goal>> UpdateGoal([FromQuery] string token, [FromBody] Goal goal)
     {
@@ -128,7 +128,7 @@ public class GoalController : ControllerBase
         return response;
     }
 
-    [HttpPost]
+    [HttpDelete]
     [Route("del")]
     public Response<IEnumerable<Goal>> DelGoal([FromQuery] string token, [FromQuery] int id)
     {

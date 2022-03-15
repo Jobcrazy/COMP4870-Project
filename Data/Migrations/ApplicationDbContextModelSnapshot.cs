@@ -47,7 +47,7 @@ namespace backend.Data.Migrations
                     b.Property<double>("amount")
                         .HasColumnType("REAL");
 
-                    b.Property<int>("categoryId")
+                    b.Property<int>("cid")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("date")
@@ -61,7 +61,7 @@ namespace backend.Data.Migrations
 
                     b.HasKey("id");
 
-                    b.HasIndex("categoryId");
+                    b.HasIndex("cid");
 
                     b.HasIndex("uid", "date");
 
@@ -135,7 +135,7 @@ namespace backend.Data.Migrations
                 {
                     b.HasOne("backend.Models.Category", "category")
                         .WithMany()
-                        .HasForeignKey("categoryId")
+                        .HasForeignKey("cid")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
