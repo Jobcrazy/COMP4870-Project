@@ -96,7 +96,7 @@ class Goal extends React.Component {
 
     try {
       let result = await axios({
-        method: "POST",
+        method: "GET",
         url: Utils.getDomain() + "api/Goal/all",
         params: {
           token: Utils.getToken(),
@@ -147,7 +147,7 @@ class Goal extends React.Component {
 
     try {
       let result = await axios({
-        method: "POST",
+        method: "DELETE",
         url: Utils.getDomain() + "api/Goal/del",
         params: {
           token: Utils.getToken(),
@@ -191,10 +191,11 @@ class Goal extends React.Component {
 
     let url =
       Utils.getDomain() + (this.bAdd ? "api/Goal/add" : "api/Goal/update");
+    let method = this.bAdd ? "POST" : "PUT";
 
     try {
       let result = await axios({
-        method: "POST",
+        method,
         url,
         params: {
           token: Utils.getToken(),
