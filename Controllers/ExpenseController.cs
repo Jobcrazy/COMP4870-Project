@@ -164,4 +164,88 @@ public class ExpenseController
 
         return response;
     }
+
+    [HttpGet]
+    [Route("monthly")]
+    public Response<IEnumerable<Expense>> getMonthly(
+        [FromQuery] String token)
+    {
+        Response<IEnumerable<Expense>> response = new Response<IEnumerable<Expense>>
+        {
+            code = CODE.ERROR_SUCCESS,
+            message = "",
+        };
+
+        if (!Utils.IsTokenValid(_context, token))
+        {
+            response.code = CODE.ERROR_INVALIDE_TOKEN;
+            response.message = "Invalide Token";
+            return response;
+        }
+
+        // Get a user
+        var user = _context.User!.SingleOrDefault(u => u.gid == token);
+
+        // Get monthly expenses
+        response.data = _context.Expense!
+                        .Select(e => new
+                        {
+                            e.uid,
+                            e.amount,
+                            e.date.Year,
+                            e.date.Month
+                        })
+                        .Where(e => e.uid == user!.id)
+                        .GroupBy(x => new { x.Year, x.Month }, (key, group) =>
+                                 new Expense
+                                 {
+                                     note = "" + key.Year + "-" + key.Month,
+                                     amount = group.Sum(k => k.amount)
+                                 }
+                        ).ToList();
+
+        return response;
+    }
+
+    [HttpGet]
+    [Route("category")]
+    public Response<IEnumerable<Expense>> getCategory(
+        [FromQuery] String token)
+    {
+        Response<IEnumerable<Expense>> response = new Response<IEnumerable<Expense>>
+        {
+            code = CODE.ERROR_SUCCESS,
+            message = "",
+        };
+
+        if (!Utils.IsTokenValid(_context, token))
+        {
+            response.code = CODE.ERROR_INVALIDE_TOKEN;
+            response.message = "Invalide Token";
+            return response;
+        }
+
+        // Get a user
+        var user = _context.User!.SingleOrDefault(u => u.gid == token);
+
+        // Get monthly expenses
+        response.data = _context.Expense!
+                        .Select(e => new
+                        {
+                            e.uid,
+                            e.amount,
+                            e.cid,
+                            e.category
+                        })
+                        .Where(e => e.uid == user!.id)
+                        .GroupBy(x => new { x.category!.id, x.category!.categoryName }, (key, group) =>
+                                 new Expense
+                                 {
+                                     note = key.categoryName,
+                                     amount = group.Sum(k => k.amount)
+                                 }
+                        ).ToList();
+
+        return response;
+    }
 }
