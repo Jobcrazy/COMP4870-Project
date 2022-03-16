@@ -326,7 +326,7 @@ class ContractList extends React.Component {
         </Col>
 
         <Modal
-          title="Add Budget"
+          title="Add Expense"
           visible={this.state.isModalVisible}
           onOk={() => this.formRef.current.submit()}
           onCancel={this.handleCancelAdd}
