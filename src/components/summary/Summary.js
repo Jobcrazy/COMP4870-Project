@@ -10,38 +10,12 @@ import { DualAxes, Bar } from "@ant-design/plots";
 import Layout from "antd/lib/layout/layout";
 const { RangePicker } = DatePicker;
 
-const CostDualAxes = () => {
-  const data = [
-    {
-      time: "2019-03",
-      value: 350,
-      count: 800,
-    },
-    {
-      time: "2019-04",
-      value: 900,
-      count: 600,
-    },
-    {
-      time: "2019-05",
-      value: 300,
-      count: 400,
-    },
-    {
-      time: "2019-06",
-      value: 450,
-      count: 380,
-    },
-    {
-      time: "2019-07",
-      value: 470,
-      count: 220,
-    },
-  ];
+const CostDualAxes = (props) => {
+  const data = props.data;
   const config = {
     data: [data, data],
     xField: "time",
-    yField: ["value", "count"],
+    yField: ["Expense", "Budget"],
     legend: false,
     geometryOptions: [
       {
@@ -58,35 +32,14 @@ const CostDualAxes = () => {
   return <DualAxes {...config} className="barchart" />;
 };
 
-const Category = () => {
-  const data = [
-    {
-      year: "1951 年",
-      value: 38,
-    },
-    {
-      year: "1952 年",
-      value: 52,
-    },
-    {
-      year: "1956 年",
-      value: 61,
-    },
-    {
-      year: "1957 年",
-      value: 145,
-    },
-    {
-      year: "1958 年",
-      value: 48,
-    },
-  ];
+const Category = (props) => {
+  const data = props.data;
   const config = {
     data,
-    xField: "value",
-    yField: "year",
-    seriesField: "year",
-    legend: false
+    xField: "amount",
+    yField: "note",
+    seriesField: "note",
+    legend: false,
   };
   return <Bar {...config} className="barchart" />;
 };
@@ -94,6 +47,26 @@ const Category = () => {
 class Summary extends React.Component {
   constructor(props) {
     super(props);
+
+    let year = new Date().getFullYear(),
+      expenses = [];
+    for (let m = 1; m <= 12; m++) {
+      //m = m < 10 ? "0" + m : m;
+      expenses.push({
+        time: year + "-" + m,
+        Expense: 0,
+        Budget: 0,
+      });
+    }
+
+    this.state = {
+      expenses,
+      category: [],
+    };
+
+    this.loadExpenses = this.loadExpenses.bind(this);
+    this.loadBudgets = this.loadBudgets.bind(this);
+    this.loadCategory = this.loadCategory.bind(this);
   }
 
   componentDidMount() {
@@ -104,6 +77,121 @@ class Summary extends React.Component {
       value: ["/main/summary"],
     };
     store.dispatch(action);
+
+    this.loadExpenses();
+    this.loadBudgets();
+    this.loadCategory();
+  }
+
+  async loadExpenses() {
+    this.setLoading(true);
+
+    try {
+      let result = await axios({
+        method: "GET",
+        url: Utils.getDomain() + "api/Expense/monthly",
+        params: {
+          token: Utils.getToken(),
+        },
+      });
+
+      this.setLoading(false);
+
+      if (result.data.code != 0) {
+        message.error(result.data.message);
+        return;
+      }
+
+      let tmpExpenses = [...this.state.expenses];
+      for (let index in result.data.data) {
+        for (let monthIndex in tmpExpenses) {
+          if (result.data.data[index].note === tmpExpenses[monthIndex].time) {
+            tmpExpenses[monthIndex].Expense = result.data.data[index].amount;
+          }
+        }
+      }
+
+      this.setState({
+        expenses: tmpExpenses,
+      });
+    } catch (err) {
+      this.setLoading(false);
+      console.log(err);
+      message.error("Something went error.");
+    }
+  }
+
+  async loadBudgets() {
+    this.setLoading(true);
+
+    try {
+      let result = await axios({
+        method: "GET",
+        url: Utils.getDomain() + "api/Goal/all",
+        params: {
+          token: Utils.getToken(),
+        },
+      });
+
+      this.setLoading(false);
+
+      if (result.data.code != 0) {
+        message.error(result.data.message);
+        return;
+      }
+
+      let tmpExpenses = [...this.state.expenses];
+      for (let index in result.data.data) {
+        for (let monthIndex in tmpExpenses) {
+          let date = Utils.dateFtt(
+            "yyyy-M",
+            Utils.cSharpDateToJsData(result.data.data[index].date)
+          );
+          if (date === tmpExpenses[monthIndex].time) {
+            tmpExpenses[monthIndex].Budget = result.data.data[index].amount;
+          }
+        }
+      }
+
+      this.setState({
+        expenses: tmpExpenses,
+      });
+    } catch (err) {
+      this.setLoading(false);
+      console.log(err);
+      message.error("Something went error.");
+    }
+  }
+
+  async loadCategory() {
+    this.setLoading(true);
+
+    try {
+      let result = await axios({
+        method: "GET",
+        url: Utils.getDomain() + "api/Expense/category",
+        params: {
+          token: Utils.getToken(),
+        },
+      });
+
+      this.setLoading(false);
+
+      if (result.data.code != 0) {
+        message.error(result.data.message);
+        return;
+      }
+
+      console.log(result.data.data)
+
+      this.setState({
+        category: result.data.data,
+      });
+    } catch (err) {
+      this.setLoading(false);
+      console.log(err);
+      message.error("Something went error.");
+    }
   }
 
   setLoading(bLoading) {
@@ -119,18 +207,11 @@ class Summary extends React.Component {
     return (
       <>
         <Row>
-          <Col span="18"></Col>
-          <Col span="6" style={{ textAlign: "right" }}>
-            <RangePicker picker="month" />
-          </Col>
+          <CostDualAxes data={this.state.expenses} />
         </Row>
 
         <Row>
-          <CostDualAxes />
-        </Row>
-
-        <Row>
-          <Category />
+          <Category data={this.state.category}/>
         </Row>
       </>
     );
