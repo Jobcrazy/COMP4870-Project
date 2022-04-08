@@ -6,7 +6,7 @@ import "../../store";
 import store from "../../store";
 import "./Summary.css";
 import ReactDOM from "react-dom";
-import { DualAxes, Bar } from "@ant-design/plots";
+import { DualAxes, Bar, Liquid } from "@ant-design/plots";
 import Layout from "antd/lib/layout/layout";
 const { RangePicker } = DatePicker;
 
@@ -44,6 +44,49 @@ const Category = (props) => {
   return <Bar {...config} className="barchart" />;
 };
 
+const CurrentExpenseLiquid = (props) => {
+  const data = props.data;
+  console.log(data);
+
+  const percentageConvert = data.expense / data.budget;
+
+  const getColor = () => {
+    if (percentageConvert <= 0.75) {
+      return '#658ff2';
+    } else if (percentageConvert > 0.75 && percentageConvert < 0.95) {
+      return '#ffcc00';
+    } else {
+      return '#d62728';
+    }
+  }
+  const config = {
+    percent: percentageConvert,
+    outline: {
+      border: 4,
+      distance: 8,
+    },
+    wave: {
+      length: 200,
+    },
+    liquidStyle: {
+      fill: getColor(),
+      stroke: getColor()
+    },
+    statistic: {
+      title: false,
+      content: {
+        style: {
+          whiteSpace: 'pre-wrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        },
+        content: '$' + `${data.expense}`,
+      },
+    },
+  };
+  return <Liquid {...config} />;
+};
+
 class Summary extends React.Component {
   constructor(props) {
     super(props);
@@ -62,6 +105,10 @@ class Summary extends React.Component {
     this.state = {
       expenses,
       category: [],
+      currentBudgetExpense: {
+        budget: 0,
+        expense: 0
+      },
     };
 
     this.loadExpenses = this.loadExpenses.bind(this);
@@ -69,7 +116,7 @@ class Summary extends React.Component {
     this.loadCategory = this.loadCategory.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     window.document.title = "Summary - Money Guardian";
 
     let action = {
@@ -78,9 +125,10 @@ class Summary extends React.Component {
     };
     store.dispatch(action);
 
-    this.loadExpenses();
-    this.loadBudgets();
-    this.loadCategory();
+    await this.loadBudgets();
+    await this.loadExpenses();
+
+    await this.loadCategory();
   }
 
   async loadExpenses() {
@@ -106,13 +154,31 @@ class Summary extends React.Component {
       for (let index in result.data.data) {
         for (let monthIndex in tmpExpenses) {
           if (result.data.data[index].note === tmpExpenses[monthIndex].time) {
-            tmpExpenses[monthIndex].Expense = result.data.data[index].amount;
+            tmpExpenses[monthIndex].Expense = result.data.data[index].amount;      
           }
         }
       }
 
+      let date = new Date();
+      let currentMonthYear = date.getFullYear() + "-" + (date.getMonth() + 1);
+
+      let tmpCurrentBudgetExpense = {
+        budget: 0,
+        expense: 0
+      };
+
+      tmpExpenses.forEach(e => {
+        if (e.time == currentMonthYear) {
+          tmpCurrentBudgetExpense.budget = e.Budget;
+          tmpCurrentBudgetExpense.expense = e.Expense;
+        }
+      });
+
+      console.log({tmpCurrentBudgetExpense});
+
       this.setState({
         expenses: tmpExpenses,
+        currentBudgetExpense: tmpCurrentBudgetExpense
       });
     } catch (err) {
       this.setLoading(false);
@@ -206,6 +272,11 @@ class Summary extends React.Component {
   render() {
     return (
       <>
+         <Row>
+          <Col className="gutter-row" span={6}>
+            <CurrentExpenseLiquid data={this.state.currentBudgetExpense} />
+          </Col>
+        </Row>
         <Row>
           <CostDualAxes data={this.state.expenses} />
         </Row>

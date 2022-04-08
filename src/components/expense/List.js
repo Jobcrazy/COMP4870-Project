@@ -347,12 +347,12 @@ class ContractList extends React.Component {
           >
             <Form.Item
               colon={false}
-              label="Month"
+              label="Date"
               name="date"
               rules={[
                 {
                   required: true,
-                  message: "Please Slect a Month",
+                  message: "Please Select a Month",
                 },
               ]}
             >
@@ -386,7 +386,7 @@ class ContractList extends React.Component {
               rules={[
                 {
                   required: true,
-                  message: "Please Slect a Category",
+                  message: "Please Select a Category",
                 },
               ]}
             >
