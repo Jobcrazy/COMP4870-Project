@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Button, message, DatePicker } from "antd";
+import { Row, Col, Button, message, DatePicker, Divider } from "antd";
 import axios from "axios";
 import Utils from "../../common/Utils";
 import "../../store";
@@ -109,6 +109,7 @@ class Summary extends React.Component {
         budget: 0,
         expense: 0
       },
+      currentMonth: "",
     };
 
     this.loadExpenses = this.loadExpenses.bind(this);
@@ -178,7 +179,8 @@ class Summary extends React.Component {
 
       this.setState({
         expenses: tmpExpenses,
-        currentBudgetExpense: tmpCurrentBudgetExpense
+        currentBudgetExpense: tmpCurrentBudgetExpense,
+        currentMonth: currentMonthYear
       });
     } catch (err) {
       this.setLoading(false);
@@ -272,15 +274,17 @@ class Summary extends React.Component {
   render() {
     return (
       <>
-         <Row>
-          <Col className="gutter-row" span={6}>
+        <Divider orientation="center">Expenses in {this.state.currentMonth}</Divider>
+        <Row>
+          <Col span={24}>
             <CurrentExpenseLiquid data={this.state.currentBudgetExpense} />
           </Col>
         </Row>
+        <Divider orientation="center">Budget vs Actual Chart</Divider>
         <Row>
           <CostDualAxes data={this.state.expenses} />
         </Row>
-
+        <Divider orientation="center">Expenses by Categories</Divider>
         <Row>
           <Category data={this.state.category}/>
         </Row>
